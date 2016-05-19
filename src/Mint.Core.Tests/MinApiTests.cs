@@ -10,5 +10,12 @@ namespace Mint.Core.Tests
         {
             MintApi mintApi = new MintApi("chinarosesz@gmail.com", "Pa$$word123456");
         }
+
+        [TestMethod, TestCategory("Integration")]
+        public void GetAccountsSummary()
+        {
+            MintApi mintApi = new MintApi("chinarosesz@gmail.com", "Pa$$word123456");
+            mintApi.GetAccountsSummary();
+        }
     }
 }

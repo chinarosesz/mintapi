@@ -1,4 +1,5 @@
 ﻿using Mint.Core.Models;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -42,53 +43,30 @@ namespace Mint.Core
                 DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(User));
                 MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(result));
                 User user = serializer.ReadObject(ms) as User;
-                return user.CsrfToken;
+
+                request = new HttpRequestMessage(HttpMethod.Get, $"https://wwws.mint.com/oauth2.xevent?token={user.CsrfToken}");
+                request.Headers.Add("Accept", "*/*");
+                response = mintClient.SendAsync(request).Result;
+                result = response.Content.ReadAsStringAsync().Result;
+                serializer = new DataContractJsonSerializer(typeof(OAuth));
+                ms = new MemoryStream(Encoding.Unicode.GetBytes(result));
+                OAuth auth = serializer.ReadObject(ms) as OAuth;
+
+                return auth.AccessToken;
             }
         }
 
-        //public void SampleRequestResponse()
-        //{
-        //    HttpClient mintClient = new HttpClient();
-        //    string username = "chinarosesz@gmail.com";
-        //    string password = "Pa$$word123456";
-
-        //    // Login
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://wwws.mint.com/login.event?task=L");
-        //    request.Headers.Add("Accept", "*/*");
-        //    HttpResponseMessage response = mintClient.SendAsync(request).Result;
-        //    string result = response.Content.ReadAsStringAsync().Result;
-
-        //    request = new HttpRequestMessage(HttpMethod.Post, "https://wwws.mint.com/getUserPod.xevent");
-        //    request.Headers.Add("Accept", "*/*");
-        //    request.Content = new StringContent($"username={username}");
-        //    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-        //    response = mintClient.SendAsync(request).Result;
-        //    result = response.Content.ReadAsStringAsync().Result;
-
-        //    request = new HttpRequestMessage(HttpMethod.Post, "https://wwws.mint.com/loginUserSubmit.xevent");
-        //    request.Headers.Add("Accept", "application/json");
-        //    request.Content = new StringContent($"username={username}&password={password}&task=L");
-        //    request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-        //    response = mintClient.SendAsync(request).Result;
-        //    result = response.Content.ReadAsStringAsync().Result;
-        //    Rootobject rootObject = new JavaScriptSerializer().Deserialize<Rootobject>(result);
-        //    Console.WriteLine(rootObject.CSRFToken);
-
-        //    // Get bearer token
-        //    request = new HttpRequestMessage(HttpMethod.Get, $"https://wwws.mint.com/oauth2.xevent?token={rootObject.CSRFToken}");
-        //    request.Headers.Add("Accept", "*/*");
-        //    response = mintClient.SendAsync(request).Result;
-        //    result = response.Content.ReadAsStringAsync().Result;
-        //    OAuth auth = new JavaScriptSerializer().Deserialize<OAuth>(result);
-        //    Console.WriteLine(auth.access_token);
-
-        //    // Get accounts
-        //    request = new HttpRequestMessage(HttpMethod.Get, "https://mint.finance.intuit.com/v1/accounts?limit=1000");
-        //    request.Headers.Add("Accept", "application/json");
-        //    request.Headers.Add("Authorization", $"Bearer {auth.access_token}");
-        //    response = mintClient.SendAsync(request).Result;
-        //    result = response.Content.ReadAsStringAsync().Result;
-        //    Console.WriteLine(result);
-        //}
+        public void GetAccountsSummary()
+        {
+            using (HttpClient mintClient = new HttpClient())
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://mint.finance.intuit.com/v1/accounts?limit=1000");
+                request.Headers.Add("Accept", "application/json");
+                request.Headers.Add("Authorization", $"Bearer {this.token}");
+                HttpResponseMessage response = mintClient.SendAsync(request).Result;
+                string result = response.Content.ReadAsStringAsync().Result;
+                Console.WriteLine(result);
+            }
+        }
     }
 }

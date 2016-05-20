@@ -65,6 +65,9 @@ namespace Mint.Core
                 request.Headers.Add("Authorization", $"Bearer {this.token}");
                 HttpResponseMessage response = mintClient.SendAsync(request).Result;
                 string result = response.Content.ReadAsStringAsync().Result;
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(OAuth));
+                MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(result));
+                Rootobject accountSummary = serializer.ReadObject(ms) as Rootobject;
                 Console.WriteLine(result);
             }
         }

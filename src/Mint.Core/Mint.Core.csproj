@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Class1.cs" />
     <Compile Include="MintApi.cs" />
     <Compile Include="Models\OAuth.cs" />
     <Compile Include="Models\User.cs" />

@@ -17,6 +17,10 @@ namespace Mint.Core
             this.token = this.Login(username, password);
         }
 
+        /// <summary>
+        /// todo: Remove blocking call
+        /// todo: Clean up request message and make it simpler
+        /// </summary>
         private string Login(string username, string password)
         {
             using (HttpClient mintClient = new HttpClient())
@@ -56,6 +60,10 @@ namespace Mint.Core
             }
         }
 
+        /// <summary>
+        /// todo: Remove model dependency, seems unstable and unpredictable
+        /// todo: Remove blocking call
+        /// </summary>
         public void GetAccountsSummary()
         {
             using (HttpClient mintClient = new HttpClient())
